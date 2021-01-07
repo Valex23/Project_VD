@@ -130,7 +130,7 @@ public class ClientCinema {
             }
 
             //questa stringa di benvenuto la inserisco fuori per non farla comparire dopo ogni azione scelta
-            System.out.println("\nCiao "+name+"! Seleziona un servizio.");
+            System.out.println("\nCiao "+name+", seleziona un servizio.");
 
             //variabile che mi servirà nel ciclo del menù per scannerizzare la scelta passata da input
             int choice;
@@ -570,10 +570,15 @@ public class ClientCinema {
 
                 //CREO MENU'
 
+                System.out.println("Vuoi stampare la lista completa, oppure vuoi fare una ricerca piu' dettagliata?");
                 System.out.println("------------------------------------------");
-                System.out.println("0 - Visiona la lista dei film");
-                System.out.println("1 - Salva la lista attuale su file");
-                System.out.println("2 - Chiudi");
+                System.out.println("0 - Lista di tutti i film");
+                System.out.println("1 - Lista di tutti i film per parola chiave nel titolo");
+                System.out.println("2 - Lista di tutti i film per genere");
+                System.out.println("3 - Lista di tutti i film per anno");
+                System.out.println("4 - Lista di tutti i film per durata");
+                System.out.println("5 - Lista di tutti i film per orario");
+                System.out.println("6 - Chiudi");
                 System.out.println("------------------------------------------");
                 System.out.println("Inserisci il numero corrispondente alla tua scelta-> ");
 
@@ -581,226 +586,184 @@ public class ClientCinema {
                     try {
                         choice = user_scanner.nextInt();
 
+                        msg_to_send = "LIST";
+                        pw.println(msg_to_send);
+                        pw.flush();
+                        //leggo quanto inviatomi dal server
+                        msg_received = server_scanner.nextLine();
+
+                        //il primo if esterno decreta se la lista è vuota o meno; in caso fosse piena stampo la lista in base alla preferenza dell'utente
+                        if (msg_received.equals("QUESTION")||choice==6) {
+
+                        //valore booleano che mi servirà a, scorrendo la lista film, capire se un determinato campo, passato in input, è presente in lista
+                        boolean search = true;
                         //ora metto le casistiche che posso scegliere, con le rispettive cose da inserire per poi mandarle al
                         //server per poi svolgere le funzioni effettive
                         switch (choice) {
 //-------------------------------------------------------------------------------------------------------------------
-                            case 0: //MOSTRA LA LISTA DI TUTTI I FILM
-                                System.out.println("\nVuoi stampare la lista completa, oppure vuoi fare una ricerca piu' dettagliata?");
-                                System.out.println("------------------------------------------");
-                                System.out.println("\t0 - Lista di tutti i film");
-                                System.out.println("\t1 - Lista di tutti i film per parola chiave nel titolo");
-                                System.out.println("\t2 - Lista di tutti i film per genere");
-                                System.out.println("\t3 - Lista di tutti i film per anno");
-                                System.out.println("\t4 - Lista di tutti i film per durata");
-                                System.out.println("\t5 - Lista di tutti i film per orario");
-                                System.out.println("\t6 - Torna al menu' principale");
-                                System.out.println("------------------------------------------");
-                                System.out.println("Inserisci il numero corrispondente alla tua scelta-> ");
-
-
-                                int choice2 = user_scanner.nextInt();
-
-                                msg_to_send = "LIST";
-                                pw.println(msg_to_send);
+                            //LISTA COMPLETA
+                            case  0:
+                                //mando la mia scelta al server
+                                pw.println("COMPLETE");
                                 pw.flush();
-                                //leggo quanto inviatomi dal server
-                                msg_received = server_scanner.nextLine();
-
-                                //il primo if esterno decreta se la lista è vuota o meno; in caso fosse piena stampo la lista in base alla preferenza dell'utente
-                                if (msg_received.equals("QUESTION")) {
-
-                                    //valore booleano che mi servirà a, scorrendo la lista film, capire se un determinato campo, passato in input, è presente in lista
-                                    boolean search = true;
-
-                                    //ora metto le casistiche che posso scegliere, con le rispettive cose da inserire per poi mandarle al
-                                    //server per poi svolgere le funzioni effettive
-                                    switch (choice2) {
-                                        //LISTA COMPLETA
-                                        case  0:
-                                            //mando la mia scelta al server
-                                            pw.println("COMPLETE");
-                                            pw.flush();
-                                            System.out.println("Ricevendo la lista completa...\n");
-                                            //stampo la lista completa grazie all'utilizzo di un ciclo che si interrompe non appena non ho più nulla da stampare
-                                            boolean listing = true;
-                                            while (listing) {
-                                                msg_received = server_scanner.nextLine();
-                                                if (msg_received.equals("END")) {
-                                                    listing = false; //finisco il ciclo
-                                                    System.out.println("Fine lista");
-                                                } else {
-                                                    //se no stampo tutti i film
-                                                    System.out.println(msg_received);
-                                                }
-                                            }
-                                            break;
-                                        //LISTA PER PAROLA CHIAVE
-                                        case 1:
-                                            //mando la mia scelta al server
-                                            pw.println("KEY_WORD");
-                                            pw.flush();
-                                            System.out.println("Inserisci la parola chiave per la ricerca del titolo del film:");
-                                            String key_word = user_scanner_title.nextLine().toUpperCase();
-                                            //mando la mia scelta al server
-                                            pw.println(key_word);
-                                            pw.flush();
-
-                                            msg_received = server_scanner.nextLine();
-
-                                            if (msg_received.equals("KW_FOUND")) {
-                                                while (search) {
-                                                    String film_found = server_scanner.nextLine();
-                                                    if (film_found.equals("END")) {
-                                                        search = false; //finisco il ciclo
-                                                        System.out.println("Fine lista");
-                                                    } else {
-                                                        //se no stampo tutti i film
-                                                        System.out.println(film_found);
-                                                    }
-                                                }
-                                            } else if (msg_received.equals("KW_EMPTY")){
-                                                System.out.println("Spiacenti! Nessun film contenente la parola <<"+key_word+">> e' stato trovato.");
-                                            }
-                                            break;
-
-                                        //LISTA PER GENERE
-                                        case 2:
-                                            //mando la mia scelta al server
-                                            pw.println("GENRE");
-                                            pw.flush();
-                                            System.out.println("Inserisci il genere:");
-                                            String genere = user_scanner_genre.nextLine().toUpperCase();
-                                            //mando la mia scelta al server
-                                            pw.println(genere);
-                                            pw.flush();
-
-                                            msg_received = server_scanner.nextLine();
-
-                                            if (msg_received.equals("GENRE_FOUND")) {
-                                                while (search) {
-                                                    String film_found = server_scanner.nextLine();
-                                                    if (film_found.equals("END")) {
-                                                        search = false; //finisco il ciclo
-                                                        System.out.println("Fine lista");
-                                                    } else {
-                                                        //se no stampo tutti i film
-                                                        System.out.println(film_found);
-                                                    }
-                                                }
-                                            } else if (msg_received.equals("GENRE_EMPTY")){
-                                                System.out.println("Spiacenti! Nessun film di genere <<"+genere+">> e' stato trovato.");
-                                            }
-                                            break;
-
-                                        //LISTA PER ANNO
-                                        case 3:
-                                            //mando la mia scelta al server
-                                            pw.println("YEAR");
-                                            pw.flush();
-                                            System.out.println("Inserisci l'anno:");
-                                            int anno = user_scanner.nextInt();
-                                            //mando la mia scelta al server
-                                            pw.println(anno);
-                                            pw.flush();
-
-                                            msg_received = server_scanner.nextLine();
-
-                                            if (msg_received.equals("YEAR_FOUND")) {
-                                                while (search) {
-                                                    String film_found = server_scanner.nextLine();
-                                                    if (film_found.equals("END")) {
-                                                        search = false; //finisco il ciclo
-                                                        System.out.println("Fine lista");
-                                                    } else {
-                                                        //se no stampo tutti i film
-                                                        System.out.println(film_found);
-                                                    }
-                                                }
-                                            } else if (msg_received.equals("YEAR_EMPTY")){
-                                                System.out.println("Spiacenti! Nessun film dell'anno <<"+anno+">> e' stato trovato.");
-                                            }
-                                            break;
-                                        //LISTA PER DURATA
-                                        case 4:
-                                            //mando la mia scelta al server
-                                            pw.println("DURATION");
-                                            pw.flush();
-                                            System.out.println("Inserisci la durata minima (in minuti):");
-                                            int durata = user_scanner.nextInt();
-                                            //mando la mia scelta al server
-                                            pw.println(durata);
-                                            pw.flush();
-
-                                            msg_received = server_scanner.nextLine();
-
-                                            if (msg_received.equals("DURATION_FOUND")) {
-                                                while (search) {
-                                                    String film_found = server_scanner.nextLine();
-                                                    if (film_found.equals("END")) {
-                                                        search = false; //finisco il ciclo
-                                                        System.out.println("Fine lista");
-                                                    } else {
-                                                        //se no stampo tutti i film
-                                                        System.out.println(film_found);
-                                                    }
-                                                }
-                                            } else if (msg_received.equals("DURATION_EMPTY")){
-                                                System.out.println("Spiacenti! Nessun film dalla durata di <<"+durata+">> e' stato trovato.");
-                                            }
-                                            break;
-                                        //LISTA PER ORARIO DI PROGRAMMAZIONE
-                                        case 5:
-                                            //mando la mia scelta al server
-                                            pw.println("TIME");
-                                            pw.flush();
-                                            System.out.println("Inserisci l'orario di programmazione:");
-                                            LocalTime orario = LocalTime.parse(user_scanner.next());
-                                            //mando la mia scelta al server
-                                            pw.println(orario);
-                                            pw.flush();
-
-                                            msg_received = server_scanner.nextLine();
-
-                                            if (msg_received.equals("TIME_FOUND")) {
-                                                while (search) {
-                                                    String film_found = server_scanner.nextLine();
-                                                    if (film_found.equals("END")) {
-                                                        search = false; //finisco il ciclo
-                                                        System.out.println("Fine lista");
-                                                    } else {
-                                                        //se no stampo tutti i film
-                                                        System.out.println(film_found);
-                                                    }
-                                                }
-                                            } else if (msg_received.equals("TIME_EMPTY")){
-                                                System.out.println("Spiacenti! Nessun film alle <<"+orario+">> e' stato trovato.");
-                                            }
-                                            break;
-                                        //TORNA AL MENU' PRINCIPALE
-                                        case 6:
-                                            //mando la mia scelta al server
-                                            pw.println("EXIT");
-                                            pw.flush();
-                                            //metto un semplice break per tornare indietro
-                                            System.out.println("...Tornando al menu' principale...");
-                                            break;
-                                        default:
-                                            System.out.println("Devi selezionare un numero tra 0 e 6.");
-                                            break;
-
+                                System.out.println("Ricevendo la lista completa...\n");
+                                //stampo la lista completa grazie all'utilizzo di un ciclo che si interrompe non appena non ho più nulla da stampare
+                                boolean listing = true;
+                                while (listing) {
+                                    msg_received = server_scanner.nextLine();
+                                    if (msg_received.equals("END")) {
+                                        listing = false; //finisco il ciclo
+                                        System.out.println("Fine lista");
+                                    } else {
+                                        //se no stampo tutti i film
+                                        System.out.println(msg_received);
                                     }
-
-                                }
-                                else if(msg_received.equals("EMPTY")){
-                                    System.out.println("Lista vuota!");
-                                }
-                                else{
-                                    System.out.println("Messaggio sconosciuto!" + msg_received);
                                 }
                                 break;
-//-------------------------------------------------------------------------------------------------------------------
-                            case 1: //QUIT
+                            //LISTA PER PAROLA CHIAVE
+                            case 1:
+                                //mando la mia scelta al server
+                                pw.println("KEY_WORD");
+                                pw.flush();
+                                System.out.println("Inserisci la parola chiave per la ricerca del titolo del film:");
+                                String key_word = user_scanner_title.nextLine().toUpperCase();
+                                //mando la mia scelta al server
+                                pw.println(key_word);
+                                pw.flush();
+
+                                msg_received = server_scanner.nextLine();
+
+                                if (msg_received.equals("KW_FOUND")) {
+                                    while (search) {
+                                        String film_found = server_scanner.nextLine();
+                                        if (film_found.equals("END")) {
+                                            search = false; //finisco il ciclo
+                                            System.out.println("Fine lista");
+                                        } else {
+                                            //se no stampo tutti i film
+                                            System.out.println(film_found);
+                                        }
+                                    }
+                                } else if (msg_received.equals("KW_EMPTY")){
+                                    System.out.println("Spiacenti! Nessun film contenente la parola <<"+key_word+">> e' stato trovato.");
+                                }
+                                break;
+
+                            //LISTA PER GENERE
+                            case 2:
+                                //mando la mia scelta al server
+                                pw.println("GENRE");
+                                pw.flush();
+                                System.out.println("Inserisci il genere:");
+                                String genere = user_scanner_genre.nextLine().toUpperCase();
+                                //mando la mia scelta al server
+                                pw.println(genere);
+                                pw.flush();
+
+                                msg_received = server_scanner.nextLine();
+
+                                if (msg_received.equals("GENRE_FOUND")) {
+                                    while (search) {
+                                        String film_found = server_scanner.nextLine();
+                                        if (film_found.equals("END")) {
+                                            search = false; //finisco il ciclo
+                                            System.out.println("Fine lista");
+                                        } else {
+                                            //se no stampo tutti i film
+                                            System.out.println(film_found);
+                                        }
+                                    }
+                                } else if (msg_received.equals("GENRE_EMPTY")){
+                                    System.out.println("Spiacenti! Nessun film di genere <<"+genere+">> e' stato trovato.");
+                                }
+                                break;
+
+                            //LISTA PER ANNO
+                            case 3:
+                                //mando la mia scelta al server
+                                pw.println("YEAR");
+                                pw.flush();
+                                System.out.println("Inserisci l'anno:");
+                                int anno = user_scanner.nextInt();
+                                //mando la mia scelta al server
+                                pw.println(anno);
+                                pw.flush();
+
+                                msg_received = server_scanner.nextLine();
+
+                                if (msg_received.equals("YEAR_FOUND")) {
+                                    while (search) {
+                                        String film_found = server_scanner.nextLine();
+                                        if (film_found.equals("END")) {
+                                            search = false; //finisco il ciclo
+                                            System.out.println("Fine lista");
+                                        } else {
+                                            //se no stampo tutti i film
+                                            System.out.println(film_found);
+                                        }
+                                    }
+                                } else if (msg_received.equals("YEAR_EMPTY")){
+                                    System.out.println("Spiacenti! Nessun film dell'anno <<"+anno+">> e' stato trovato.");
+                                }
+                                break;
+                            //LISTA PER DURATA
+                            case 4:
+                                //mando la mia scelta al server
+                                pw.println("DURATION");
+                                pw.flush();
+                                System.out.println("Inserisci la durata minima (in minuti):");
+                                int durata = user_scanner.nextInt();
+                                //mando la mia scelta al server
+                                pw.println(durata);
+                                pw.flush();
+
+                                msg_received = server_scanner.nextLine();
+
+                                if (msg_received.equals("DURATION_FOUND")) {
+                                    while (search) {
+                                        String film_found = server_scanner.nextLine();
+                                        if (film_found.equals("END")) {
+                                            search = false; //finisco il ciclo
+                                            System.out.println("Fine lista");
+                                        } else {
+                                            //se no stampo tutti i film
+                                            System.out.println(film_found);
+                                        }
+                                    }
+                                } else if (msg_received.equals("DURATION_EMPTY")){
+                                    System.out.println("Spiacenti! Nessun film dalla durata di <<"+durata+">> e' stato trovato.");
+                                }
+                                break;
+                            //LISTA PER ORARIO DI PROGRAMMAZIONE
+                            case 5:
+                                //mando la mia scelta al server
+                                pw.println("TIME");
+                                pw.flush();
+                                System.out.println("Inserisci l'orario di programmazione:");
+                                LocalTime orario = LocalTime.parse(user_scanner.next());
+                                //mando la mia scelta al server
+                                pw.println(orario);
+                                pw.flush();
+
+                                msg_received = server_scanner.nextLine();
+
+                                if (msg_received.equals("TIME_FOUND")) {
+                                    while (search) {
+                                        String film_found = server_scanner.nextLine();
+                                        if (film_found.equals("END")) {
+                                            search = false; //finisco il ciclo
+                                            System.out.println("Fine lista");
+                                        } else {
+                                            //se no stampo tutti i film
+                                            System.out.println(film_found);
+                                        }
+                                    }
+                                } else if (msg_received.equals("TIME_EMPTY")){
+                                    System.out.println("Spiacenti! Nessun film alle <<"+orario+">> e' stato trovato.");
+                                }
+                                break;
+                            //TORNA AL MENU' PRINCIPALE
+                            case 6:
                                 //setto go2 a false per uscire dal ciclo che mi fa uscire da tutto, quindi dalla possibilità
                                 //di scegliere dal menù
                                 go2 = false;
@@ -812,11 +775,18 @@ public class ClientCinema {
                                 System.out.println(msg_received);
                                 break;
 
-//-------------------------------------------------------------------------------------------------------------------
-
-                            default:System.out.println("Puoi digitare solo un numero compreso tra 0 e 1!");
+                            default:
+                                System.out.println("Puoi digitare solo un numero compreso tra 0 e 6!");
                                 break;
                         }
+
+                    }
+                    else if(msg_received.equals("EMPTY")){
+                        System.out.println("Lista vuota!");
+                    }
+                    else{
+                        System.out.println("Messaggio sconosciuto!->" + msg_received);
+                    }
 //--------------------------------------FINE SWITCH-----------------------------------------------------------------------------
 
                     } catch (DateTimeParseException d) {

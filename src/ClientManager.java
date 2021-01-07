@@ -355,7 +355,7 @@ public class ClientManager implements Runnable {
                             int durata = client_scanner.nextInt();
 
                             //inizializzo il comparatore che mi stabilisce il criterio di ordine per durata dei film
-                            TimeComparator dc = new TimeComparator();
+                            DurationComparator dc = new DurationComparator();
                             //ordino la lista secondo il mio comparatore, quindi la lista questa volta, sarà automaticamente ordinata per durata dei film
                             Collections.sort(ll, dc);
 
@@ -432,6 +432,21 @@ public class ClientManager implements Runnable {
 
                         case "EXIT":
                             System.out.println("SERVER LOG: il client ha richiesto di tornare al menu' principale!");
+                            break;
+
+                        //questo case verrà utilizzato dal cliente normale, che chiuderà direttamente anzichè tornare al menu' principale
+                        case "QUIT":
+                            System.out.println("\nSERVER_LOG: il client "+client_id+" vuole chiudere la connessione");
+                            System.out.println("SERVER: chiudo la connessione to " + client_socket.getRemoteSocketAddress());
+                            pw.println("Il server ha chiuso la connessione, come da protocollo");
+                            pw.flush();
+
+                            try {
+                                client_socket.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            go = false; //così non rientro nel while più interno per ascoltare altre richieste dello stesso client
                             break;
                     }
 

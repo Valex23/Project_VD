@@ -7,6 +7,6 @@ public class DurationComparator implements Comparator<Film> {
 
     @Override
     public int compare(Film f1, Film f2) {
-        return f1.getDuration()-(f2.getDuration());
+        return f1.getDuration()-f2.getDuration();
     }
 }
