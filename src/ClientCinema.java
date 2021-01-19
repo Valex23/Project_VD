@@ -135,20 +135,42 @@ public class ClientCinema {
             //variabile che mi servirà nel ciclo del menù per scannerizzare la scelta passata da input
             int choice;
 
+
+
+//carico da file all'inizio del programma
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            msg_to_send = "LOAD";
+            pw.println(msg_to_send);
+            pw.flush();
+            //leggo quanto inviatomi dal server
+            msg_received = server_scanner.nextLine();
+            //ora in base a cosa mi risponde il server al mio invio di dati, agisco di conseguenza
+            if (msg_received.equals("LOAD_OK")) {
+                System.out.println("Lista caricata da file.");
+            } else if (msg_received.equals("FILE_NOT_FOUND")) {
+                System.out.println("Nessun file presente; nessuna lista caricata.");
+            } else if (msg_received.equals("LOAD_ERROR")) {
+                System.out.println("Errore nel caricamento.");
+            }else {
+                System.out.println("Messaggio sconosciuto->" + msg_received);
+            }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 //**************************************************************************************************************************************************************************************
             //finchè ho qualcosa da scrivere e non seleziono il comando QUIT, rimane nel ciclo while
             //CICLO GESTORE
             while (go) {
-
-                    //CREO MENU'
+                 //CREO MENU'
 
                     System.out.println("------------------------------------------");
                     System.out.println("0 - Aggiungi film");
                     System.out.println("1 - Rimuovi film");
                     System.out.println("2 - Visiona la lista dei film");
-                    System.out.println("3 - Salva la lista attuale su file");
-                    System.out.println("4 - Carica la lista attuale da file");
-                    System.out.println("5 - Chiudi");
+                    System.out.println("3 - Salva la lista attuale su file di testo");
+                    System.out.println("4 - Chiudi");
                     System.out.println("------------------------------------------");
                     System.out.println("Inserisci il numero corrispondente alla tua scelta-> ");
 
@@ -499,36 +521,7 @@ public class ClientCinema {
                                 }
                                 break;
 //-------------------------------------------------------------------------------------------------------------------
-                            case 4: //LOAD
-                                msg_to_send = "LOAD";
-                                pw.println(msg_to_send);
-                                pw.flush();
-
-                                //leggo quanto inviatomi dal server
-                                msg_received = server_scanner.nextLine();
-                                //ora in base a cosa mi risponde il server al mio invio di dati, agisco di conseguenza
-                                if (msg_received.equals("LOAD_OK")) {
-                                    boolean read=true;
-                                    while (read) {
-                                        String film_found = server_scanner.nextLine();
-                                        if (film_found.equals("END")) {
-                                            read = false; //finisco il ciclo
-                                            System.out.println("Fine file.");
-                                        } else {
-                                            //se no stampo tutti i film
-                                            System.out.println(film_found);
-                                        }
-                                    }
-                                } else if (msg_received.equals("FILE_NOT_FOUND")) {
-                                    System.out.println("Errore nel caricamento da file; file non trovato.");
-                                } else if (msg_received.equals("LOAD_ERROR")) {
-                                    System.out.println("Errore nel caricamento.");
-                                }else {
-                                    System.out.println("Messaggio sconosciuto->" + msg_received);
-                                }
-                                break;
-//-------------------------------------------------------------------------------------------------------------------
-                            case 5: //QUIT
+                            case 4: //QUIT
                                 //setto go a false per uscire dal ciclo che mi fa uscire da tutto, quindi dalla possibilità
                                 //di scegliere dal menù
                                 go = false;
@@ -762,7 +755,7 @@ public class ClientCinema {
                                     System.out.println("Spiacenti! Nessun film alle <<"+orario+">> e' stato trovato.");
                                 }
                                 break;
-                            //TORNA AL MENU' PRINCIPALE
+                            //CHIUDI
                             case 6:
                                 //setto go2 a false per uscire dal ciclo che mi fa uscire da tutto, quindi dalla possibilità
                                 //di scegliere dal menù

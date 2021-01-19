@@ -5,8 +5,8 @@ import java.util.Objects;
 
 //qui in questa nuova classe confeziono il mio Arraylist, in modo da poter definire metodi synchronized
 public class FilmList implements Serializable {
-        private ArrayList<Film> list;
 
+    private ArrayList<Film> list;
 
     //costruttore
     public FilmList(){ list = new ArrayList<Film>();    }
@@ -30,12 +30,6 @@ public class FilmList implements Serializable {
         return list;
     }
 
-    //questo metodo lo implemento per poter controllare se un film è già stato inserito; se lo è ritorno true alla lista che lo invoca, se no false
-    public boolean contains(Film f){
-       boolean ans = list.contains(f);
-        return ans;
-    }
-
 
     //metodo per la dimensione di una lista
     public int size() {
@@ -53,13 +47,13 @@ public class FilmList implements Serializable {
 //altro metodo per vedere la lista; fargliela stampare sotto forma di stringa
     @Override
     public String toString() {
-        for(Film p:list){
-        return "PersonList5{" +
-                "list=" + p +
+        String ultima_modifica = new Date().toString();
+        //for(Film p:list){
+        return "FilmList =" + list + ultima_modifica +
                 '}';
+    //}
+     //   return null;
     }
-        return null;
-}
 
 
 }

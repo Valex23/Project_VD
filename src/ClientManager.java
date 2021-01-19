@@ -123,6 +123,21 @@ public class ClientManager implements Runnable {
                 }
                 pw.flush();
 
+//salvo su file automaticamente dopo l'aggiunta
+                try {
+                    var oos = new ObjectOutputStream(new FileOutputStream("Lista.ser"));
+                    //per scrivere la lista su file, l'arraylist seve essere serializable così come lo deve essere il tipo che lo identifica
+                    //overo Film; quindi la classe Film deve anch'essa essere serializable
+                    oos.writeObject(list);
+                    oos.close();
+                } catch (IOException e) {
+                    pw.println("SAVE_ERROR");
+                    pw.flush();
+                    e.printStackTrace();
+                    System.out.println("SERVER_LOG: errore nel salvataggio della lista");
+                }
+//fine salvataggio
+
 
                 //questa azione la faccio per svuotare lo scanner; infatti non facendolo, avevo problemi perchè evidentemente
                 //rimaneva qualcosa che veniva preso come comando al ricominciare del ciclo while(go), ovviamente sconosciuto
@@ -186,6 +201,23 @@ public class ClientManager implements Runnable {
                             //lo comunico al client che è stato rimosso;
                             pw.println("REMOVE_OK");
                             pw.flush();
+
+
+                            //salvo su file automaticamente dopo la rimozione
+                            try {
+                                var oos = new ObjectOutputStream(new FileOutputStream("Lista.ser"));
+                                //per scrivere la lista su file, l'arraylist seve essere serializable così come lo deve essere il tipo che lo identifica
+                                //overo Film; quindi la classe Film deve anch'essa essere serializable
+                                oos.writeObject(list);
+                                oos.close();
+                            } catch (IOException e) {
+                                pw.println("SAVE_ERROR");
+                                pw.flush();
+                                e.printStackTrace();
+                                System.out.println("SERVER_LOG: errore nel salvataggio della lista");
+                            }
+                            //fine salvataggio
+
                         }
 
                         //questa azione la faccio per svuotare lo scanner; infatti non facendolo, avevo problemi perchè evidentemente
@@ -197,6 +229,26 @@ public class ClientManager implements Runnable {
 //--------------------------------------------------------LIST--------------------------------------------------------------------------------------------------------------
             else if (cmd.equals("LIST")) {
                 System.out.println("SERVER LOG: il client "+client_id+" vuole richiedere la lista dei film");
+
+
+                //***  carica la lista da file
+                try {
+                    var load = new ObjectInputStream(new FileInputStream("Lista.ser"));
+                    Object r = load.readObject();
+                    //faccio il cast dell'oggetto
+                    FilmList lista = (FilmList) r;
+                    load.close();
+                    list = lista;
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    pw.println("LOAD_ERROR");
+                    pw.flush();
+                    e.printStackTrace();
+                    System.out.println("SERVER_LOG: errore nella lettura della lista");
+                }
+                //*** proseguo dopo il caricamento da file
+
 
                 //faccio il controllo se la lista è vuota o meno; in caso fosse vuota lo notifico
                 if(list.size()==0){
@@ -466,24 +518,17 @@ public class ClientManager implements Runnable {
                 }
                 else {
                     try {
-
                         String ultima_modifica = new Date().toString();
-                        //File file = new File("C:/Users/Valerio/IdeaProjects/Project_VD/src/Lista.txt");
 
                         //con quanto segue, aggiungo in coda gli elementi ad una lista già esistente
                         FileWriter fw = new FileWriter("Lista.txt");
-
-
 
                         //scansiono la lista (ritornatami tramite metodo, perchè ricorda che fai riferimento ad una classe FilmList
                         //e non puoi fare il for-each direttamente su list) e man mano ne stampo il contenuto su file
                         for(Film iter:list.showList()) {
                             fw.write(iter.toString()+""+ultima_modifica+"\n");
                         }
-
                         fw.close();
-
-                        //var oos = new ObjectOutputStream(new FileOutputStream("x.txt"));
 
                         pw.println("SAVE_OK");
                         pw.flush();
@@ -503,30 +548,21 @@ public class ClientManager implements Runnable {
                 try {
                     try {
 
-                        //inizializzo il file reader per leggere il file
-                        FileReader f = new FileReader("Lista.txt");
+                        var load = new ObjectInputStream(new FileInputStream("Lista.ser"));
+
+                        Object r = load.readObject();
+
+                        //faccio il cast dell'oggetto
+                        FilmList lista = (FilmList) r;
+
+                        load.close();
+
+                        list = lista;
 
                         //se arrivo qui senza errori, è perchè il file esiste e posso fare il caricamento (ecco perchè i try-catch)
                         pw.println("LOAD_OK");
+                        //pw.println(lista);
                         pw.flush();
-
-                        //Per poter leggere una linea per volta, è necessario creare un oggetto BufferedReader a partire dal FileReader.
-                        //In altre parole, si crea prima un FileReader, poi usando questo si crea un BufferedReader.
-                        //Quest'ultimo si può quindi usare per la lettura riga per riga.
-                        BufferedReader b = new BufferedReader(f);
-
-                        String s;
-
-                        while (true) {
-                            s = b.readLine();
-                            if (s == null) {
-                                pw.println("END");
-                                break;
-                            } else pw.println(s);
-                        }
-                        pw.flush();
-                        f.close();
-
                         System.out.println("SERVER_LOG: lista prelevata correttamente!");
 
                     } catch (FileNotFoundException n) {
@@ -534,6 +570,8 @@ public class ClientManager implements Runnable {
                         //lo comunico al client
                         pw.println("FILE_NOT_FOUND");
                         pw.flush();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
                     }
 
                 } catch (IOException e) {

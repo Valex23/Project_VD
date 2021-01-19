@@ -1,8 +1,7 @@
 import java.io.Serializable;
 import java.time.LocalTime;
-import java.util.Objects;
 
-//devo far diventare Person serializable, al fine di poter scrivere correttamente l'Arraylist<Film> su file, ovvero la mia lista
+//devo far diventare Film serializable, al fine di poter scrivere correttamente l'Arraylist<Film> su file, ovvero la mia lista
 public class Film implements Serializable{
 
     private String title;
