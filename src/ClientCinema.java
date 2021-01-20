@@ -129,13 +129,6 @@ public class ClientCinema {
                 }
             }
 
-            //questa stringa di benvenuto la inserisco fuori per non farla comparire dopo ogni azione scelta
-            System.out.println("\nCiao "+name+", seleziona un servizio.");
-
-            //variabile che mi servirà nel ciclo del menù per scannerizzare la scelta passata da input
-            int choice;
-
-
 
 //carico da file all'inizio del programma
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,7 +149,11 @@ public class ClientCinema {
             }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+            //questa stringa di benvenuto la inserisco fuori per non farla comparire dopo ogni azione scelta
+            System.out.println("\nCiao "+name+", seleziona un servizio.");
 
+            //variabile che mi servirà nel ciclo del menù per scannerizzare la scelta passata da input
+            int choice;
 
 
 //**************************************************************************************************************************************************************************************
