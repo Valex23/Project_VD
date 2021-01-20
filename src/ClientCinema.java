@@ -139,7 +139,7 @@ public class ClientCinema {
             msg_received = server_scanner.nextLine();
             //ora in base a cosa mi risponde il server al mio invio di dati, agisco di conseguenza
             if (msg_received.equals("LOAD_OK")) {
-                System.out.println("Lista caricata da file.");
+                System.out.println("\nLista caricata da file.");
             } else if (msg_received.equals("FILE_NOT_FOUND")) {
                 System.out.println("Nessun file presente; nessuna lista caricata.");
             } else if (msg_received.equals("LOAD_ERROR")) {
